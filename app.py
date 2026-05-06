@@ -104,7 +104,7 @@ elif "단순" in menu:
     st.title("🔍 KIPRIS 단순 특허 검색")
     st.markdown("AI 분석 없이 특허 목록과 요약문만 아주 빠르게 검색하여 엑셀로 추출합니다.")
     
-    search_keyword_simple = st.text_input("검색할 특허 키워드를 입력하세요", value="아이비엽 추출물", key="simple_search")
+    search_keyword_simple = st.text_input("검색할 특허 키워드를 입력하세요", value="-", key="simple_search")
     
     if st.button("⚡ 빠른 검색 시작"):
         if not kipris_key:
