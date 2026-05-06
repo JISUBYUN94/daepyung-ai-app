@@ -39,10 +39,10 @@ if "AI" in menu:
 
     col1, col2 = st.columns(2)
     with col1:
-        search_keyword = st.text_input("검색할 특허 키워드", value="아이비엽 추출물")
+        search_keyword = st.text_input("검색할 특허 키워드", value="-")
     with col2:
         our_process = st.text_area("대조할 당사 공정/기술", 
-                                  value="아이비엽을 30% 에탄올로 80°C에서 추출한 후 분무 건조하여 분말화하는 공정.")
+                                  value="-")
 
     if st.button("🚀 AI 분석 시작"):
         if not kipris_key or not gemini_key:
