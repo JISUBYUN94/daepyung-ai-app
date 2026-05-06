@@ -5,7 +5,7 @@ import requests
 import re
 import time
 
-st.set_page_config(page_title="사내 AI 특허 분석 시스템", layout="wide")
+st.set_page_config(page_title="대평 사내 AI 특허 분석 시스템", layout="wide")
 
 # ==========================================
 # 0. 사이드바: 설정 및 메뉴 선택
@@ -14,32 +14,35 @@ with st.sidebar:
     st.header("⚙️ 기본 설정")
     kipris_key = st.text_input("KIPRIS API Key", type="password")
     gemini_key = st.text_input("Gemini API Key", type="password")
-    num_results = st.slider("가져올 특허 개수", 5, 10, 50)
+    num_results = st.slider("가져올 특허 개수", 1, 20, 50)
     
     st.divider() # 시각적 구분선
     
     st.header("📂 메뉴 선택")
     menu = st.radio("원하시는 기능을 선택하세요:", 
-                    ["🛡️ AI 리스크 분석(유료)", "🔍 단순 특허 검색 (무료)"])
-
-    st.markdown("---") 
+                    ["🛡️ AI 리스크 분석(유로)", "🔍 단순 특허 검색 (무료)"])
+    
+    # 제작자 서명 (왼쪽 들여쓰기가 with st.sidebar 라인에 맞춰져 있습니다)
+    st.markdown("---")
     st.caption("👨‍💻 **Developed by:** [변 지수 / 연구개발팀]")
     st.caption("📧 **Contact:** [byun3125@daepyung.co.kr]")
     st.caption("© 2026 [Daepyung]. All rights reserved.")
 
+
+# 🚨 여기서부터는 메인 화면입니다! (왼쪽 끝에 딱 붙어서 시작해야 합니다)
 # ==========================================
-# 1. 첫 번째 메뉴: AI 리스크 분석 (기존 기능)
+# 1. 첫 번째 메뉴: AI 리스크 분석
 # ==========================================
-if menu == "🛡️ AI 리스크 분석":
+if "AI" in menu:
     st.title("🛡️ 실시간 특허 침해 리스크 분석 시스템")
     st.markdown("경쟁사 특허 요약문을 AI가 당사 공정과 대조하여 리스크를 즉시 분석합니다.")
 
     col1, col2 = st.columns(2)
     with col1:
-        search_keyword = st.text_input("검색할 특허 키워드", value="-")
+        search_keyword = st.text_input("검색할 특허 키워드", value="아이비엽 추출물")
     with col2:
-        our_process = st.text_area("대조할 공정/기술", 
-                                  value="-")
+        our_process = st.text_area("대조할 당사 공정/기술", 
+                                  value="아이비엽을 30% 에탄올로 80°C에서 추출한 후 분무 건조하여 분말화하는 공정.")
 
     if st.button("🚀 AI 분석 시작"):
         if not kipris_key or not gemini_key:
@@ -94,15 +97,14 @@ if menu == "🛡️ AI 리스크 분석":
                     df.to_excel(writer, index=False)
                 st.download_button(label="📥 AI 분석 리포트 엑셀 다운로드", data=output.getvalue(), file_name=f"{search_keyword}_AI분석.xlsx")
 
-
 # ==========================================
-# 2. 두 번째 메뉴: 단순 특허 검색 (신규 기능)
+# 2. 두 번째 메뉴: 단순 특허 검색
 # ==========================================
-elif menu == "🔍 단순 특허 검색 (무료)":
+elif "단순" in menu:
     st.title("🔍 KIPRIS 단순 특허 검색")
     st.markdown("AI 분석 없이 특허 목록과 요약문만 아주 빠르게 검색하여 엑셀로 추출합니다.")
     
-    search_keyword_simple = st.text_input("검색할 특허 키워드를 입력하세요", value="-", key="simple_search")
+    search_keyword_simple = st.text_input("검색할 특허 키워드를 입력하세요", value="아이비엽 추출물", key="simple_search")
     
     if st.button("⚡ 빠른 검색 시작"):
         if not kipris_key:
@@ -112,7 +114,6 @@ elif menu == "🔍 단순 특허 검색 (무료)":
             search_url = "http://plus.kipris.or.kr/kipo-api/kipi/patUtiModInfoSearchSevice/getWordSearch"
             res = requests.get(search_url, params={"word": search_keyword_simple, "ServiceKey": kipris_key, "numOfRows": num_results})
             
-        
             items = re.findall(r'<item>(.*?)</item>', res.text, re.DOTALL | re.IGNORECASE)
             
             if not items:
@@ -144,4 +145,3 @@ elif menu == "🔍 단순 특허 검색 (무료)":
                 with pd.ExcelWriter(output_simple, engine='openpyxl') as writer:
                     df_simple.to_excel(writer, index=False)
                 st.download_button(label="📥 특허 목록 엑셀 다운로드", data=output_simple.getvalue(), file_name=f"{search_keyword_simple}_목록.xlsx")
-
