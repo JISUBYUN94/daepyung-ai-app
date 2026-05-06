@@ -18,7 +18,6 @@ with st.sidebar:
     
     st.divider() # 시각적 구분선
     
-    # 💡 새로운 메뉴 기능 추가!
     st.header("📂 메뉴 선택")
     menu = st.radio("원하시는 기능을 선택하세요:", 
                     ["🛡️ AI 리스크 분석", "🔍 단순 특허 검색 (빠름)"])
@@ -98,7 +97,6 @@ elif menu == "🔍 단순 특허 검색 (빠름)":
     st.title("🔍 KIPRIS 단순 특허 검색")
     st.markdown("AI 분석 없이 특허 목록과 요약문만 아주 빠르게 검색하여 엑셀로 추출합니다.")
     
-    # 여기서는 제미나이 키나 당사 공정 내용이 필요 없습니다.
     search_keyword_simple = st.text_input("검색할 특허 키워드를 입력하세요", value="아이비엽 추출물", key="simple_search")
     
     if st.button("⚡ 빠른 검색 시작"):
@@ -108,7 +106,9 @@ elif menu == "🔍 단순 특허 검색 (빠름)":
             st.info("🔍 KIPRIS에서 데이터를 빠르게 가져오는 중...")
             search_url = "http://plus.kipris.or.kr/kipo-api/kipi/patUtiModInfoSearchSevice/getWordSearch"
             res = requests.get(search_url, params={"word": search_keyword_simple, "ServiceKey": kipris_key, "numOfRows": num_results})
-            items = re.findall(r'<item>(.*?)</item>', res.text, re.DOTALL | 대소문자무시를_위한_플래그_수정_re.IGNORECASE)
+            
+            # 💡 문제가 되었던 한글 오타를 깔끔하게 지웠습니다!
+            items = re.findall(r'<item>(.*?)</item>', res.text, re.DOTALL | re.IGNORECASE)
             
             if not items:
                 st.warning("검색 결과가 없습니다.")
